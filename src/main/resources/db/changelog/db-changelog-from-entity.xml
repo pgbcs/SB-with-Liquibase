@@ -1,0 +1,65 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="ASUS (generated)" id="1752031066351-1">
+        <createTable tableName="classes">
+            <column name="grade" type="INTEGER"/>
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="classes_pkey"/>
+            </column>
+            <column name="classid" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="school_id" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="ASUS (generated)" id="1752031066351-2">
+        <createTable tableName="school">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="school_pkey"/>
+            </column>
+            <column name="address" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="school_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="ASUS (generated)" id="1752031066351-3">
+        <addUniqueConstraint columnNames="classid" constraintName="classes_classid_key" tableName="classes"/>
+    </changeSet>
+    <changeSet author="ASUS (generated)" id="1752031066351-4">
+        <addUniqueConstraint columnNames="school_id" constraintName="school_school_id_key" tableName="school"/>
+    </changeSet>
+    <changeSet author="ASUS (generated)" id="1752031066351-5">
+        <createTable tableName="pet_table">
+            <column name="id" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pet_table_pkey"/>
+            </column>
+            <column name="breed" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="ASUS (generated)" id="1752031066351-6">
+        <createTable tableName="student">
+            <column name="birthday" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="student_pkey"/>
+            </column>
+            <column name="class_id" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="ASUS (generated)" id="1752031066351-7">
+        <createTable tableName="test2">
+            <column name="id" type="INTEGER"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="ASUS (generated)" id="1752031066351-8">
+        <addForeignKeyConstraint baseColumnNames="class_id" baseTableName="student" constraintName="fknsl7w2nw6o6eq53hqlxfcijpm" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="classid" referencedTableName="classes" validate="true"/>
+    </changeSet>
+    <changeSet author="ASUS (generated)" id="1752031066351-9">
+        <addForeignKeyConstraint baseColumnNames="school_id" baseTableName="classes" constraintName="fkpmbjltak5i0knqcgyydru2f18" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="school_id" referencedTableName="school" validate="true"/>
+    </changeSet>
+</databaseChangeLog>

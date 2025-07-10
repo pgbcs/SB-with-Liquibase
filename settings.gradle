@@ -1,0 +1,7 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal() // <--- Đây là nơi Gradle tìm các plugin từ Plugin Portal
+    }
+}
+
+rootProject.name = 'test'

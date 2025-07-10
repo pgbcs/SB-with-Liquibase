@@ -1,0 +1,12 @@
+databaseChangeLog:
+- changeSet:
+    id: 1752051893418-1
+    author: ASUS (generated)
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            name: ABC
+            type: varchar(255)
+        tableName: student
+

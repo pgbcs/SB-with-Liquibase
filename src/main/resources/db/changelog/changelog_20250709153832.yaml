@@ -1,0 +1,14 @@
+databaseChangeLog:
+- changeSet:
+    id: 1752050318854-1
+    author: ASUS (generated)
+    changes:
+    - dropTable:
+        tableName: pet_table
+- changeSet:
+    id: 1752050318854-2
+    author: ASUS (generated)
+    changes:
+    - dropTable:
+        tableName: test2
+

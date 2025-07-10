@@ -1,0 +1,22 @@
+databaseChangeLog:
+- changeSet:
+    id: 1752074230098-1
+    author: ASUS (generated)
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            name: CDE
+            type: varchar(255)
+        tableName: student
+- changeSet:
+    id: 1752074230098-2
+    author: ASUS (generated)
+    changes:
+    - addColumn:
+        columns:
+        - column:
+            name: DEF
+            type: varchar(255)
+        tableName: student
+

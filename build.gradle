@@ -1,0 +1,106 @@
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath 'org.liquibase:liquibase-core:4.23.0'
+	}
+}
+
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.5.0'
+	id 'io.spring.dependency-management' version '1.1.7'
+	id 'org.liquibase.gradle' version '3.0.2'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain { 
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	runtimeOnly 'org.postgresql:postgresql'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	liquibaseRuntime 'org.liquibase:liquibase-core:4.23.0'
+	liquibaseRuntime 'org.liquibase:liquibase-groovy-dsl:2.1.1'
+	liquibaseRuntime 'info.picocli:picocli:4.7.5'
+	liquibaseRuntime 'org.yaml:snakeyaml:1.33'
+	liquibaseRuntime 'org.postgresql:postgresql'
+	liquibaseRuntime sourceSets.main.output
+	liquibaseRuntime 'org.springframework.boot:spring-boot-starter-data-jpa'
+//	liquibaseRuntime 'org.liquibase.ext:liquibase-hibernate5:4.17.0'
+	liquibaseRuntime 'org.liquibase.ext:liquibase-hibernate6:4.25.1'
+
+	apply plugin: "org.liquibase.gradle"
+}
+
+
+
+def getTimestamp() {
+	def date = new Date()
+	return date.format('yyyyMMddHHmmss')
+}
+
+final MIGR_NAME = "src/main/resources/db/changelog/changelog_" + getTimestamp() + ".yaml"
+
+ext{
+	runList = project.hasProperty('runList') ? project.runList : "main"
+}
+
+liquibase {
+	activities {
+		main {
+
+		}
+		genChangelogFromDB{
+			changelogFile "src/main/resources/db/changelog/db-changelog-from-entity.xml"
+		}
+		genNewChangelog{
+			changelogFile MIGR_NAME
+			driver "org.postgresql.Driver"
+			referenceUrl "hibernate:spring:com.example.test.data.entities?dialect=org.hibernate.dialect.PostgreSQLDialect" +
+					"&hibernate.physical_naming_strategy=org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl" +
+					"&hibernate.implicit_naming_strategy=org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl"
+		}
+	}
+	runList = project.ext.runList
+}
+
+//tasks.register("generateChangelogFromDB"){
+//	group = "Liquibase"
+//	description = "Use to generate initial changelog file from existed db."
+//	doFirst {
+//		project.ext.runList = "genChangelogFromDB"
+//	}
+//	dependsOn "generateChangelog"
+//}
+
+tasks.register('syncDbFromEntities') {
+	group = 'Liquibase'
+	description = 'Generate changelog from entities.'
+
+	dependsOn 'compileJava'
+
+	finalizedBy 'diffChangelog'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
