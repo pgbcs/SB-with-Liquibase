@@ -12,6 +12,7 @@ plugins {
 	id 'org.springframework.boot' version '3.5.0'
 	id 'io.spring.dependency-management' version '1.1.7'
 	id 'org.liquibase.gradle' version '3.0.2'
+	id "org.hibernate.tool.hibernate-tools-gradle" version "7.0.3.Final"
 }
 
 group = 'com.example'
@@ -27,6 +28,9 @@ repositories {
 	mavenCentral()
 }
 
+configurations {
+	reverseMap
+}
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -36,6 +40,7 @@ dependencies {
 	runtimeOnly 'org.postgresql:postgresql'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	implementation 'org.postgresql:postgresql:42.6.0'//add for gen entities
 
 	liquibaseRuntime 'org.liquibase:liquibase-core:4.23.0'
 	liquibaseRuntime 'org.liquibase:liquibase-groovy-dsl:2.1.1'
@@ -47,10 +52,13 @@ dependencies {
 //	liquibaseRuntime 'org.liquibase.ext:liquibase-hibernate5:4.17.0'
 	liquibaseRuntime 'org.liquibase.ext:liquibase-hibernate6:4.25.1'
 
-	apply plugin: "org.liquibase.gradle"
+	reverseMap 'org.hibernate:hibernate-core:5.4.21.Final'
+	reverseMap 'org.hibernate:hibernate-tools:5.4.21.Final'
+	reverseMap 'org.slf4j:slf4j-simple:1.7.36'
+	reverseMap 'org.postgresql:postgresql:42.6.0'
 }
 
-
+apply plugin: "org.liquibase.gradle"
 
 def getTimestamp() {
 	def date = new Date()
@@ -104,3 +112,33 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
+def hibernateDestDir = file("$projectDir/src/main/java/com/example/test/data/generated/")
+
+tasks.register('reverseMap') {
+	group = 'hibernate'
+	description = 'Generate @Entity classes from existing DB schema'
+
+	outputs.dir(hibernateDestDir)
+
+	doLast {
+		if (!hibernateDestDir.exists()) {
+			mkdir(hibernateDestDir)
+		}
+//		println("$projectDir")
+		ant.taskdef(
+				name: 'hibernatetool',
+				classname: 'org.hibernate.tool.ant.HibernateToolTask',
+				classpath: configurations.reverseMap.asPath
+		)
+
+		ant.hibernatetool(destdir: hibernateDestDir) {
+			jdbcconfiguration (
+					propertyfile: "src/main/resources/hibernate.properties"
+			)
+			hbm2java(
+					jdk5: true,
+					ejb3: true
+			)
+		}
+	}
+}
